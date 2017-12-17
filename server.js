@@ -54,18 +54,13 @@ var setEventHandlers = function () {
 function onSocketConnection (client) {
 	console.log('onSocketConnection client.id' + '\n')
 
-	// key = client.id.substring(0, 4).toLowerCase()
-
 	client.on(Events.REGISTER, onRegister)
-
-	/*
 
 	client.on(Events.NEW_USER, onNewUser)
 
 	client.on(Events.MOVE_USER, onMoveUser)
 
-	client.on(Events.SOCKET_DISCONNECT, onClientDisconnect)
-	*/
+	client.on(Events.DISCONNECT, onDisconnect)
 
 	this.emit(Events.CONNECT, { key: key })
 }
@@ -84,7 +79,6 @@ function onRegister (data) {
 	}
 }
 
-/*
 function onNewUser (data) {
 	console.log('onNewUser: ', data)
 
@@ -129,7 +123,7 @@ function onMoveUser(data) {
 	this.broadcast.emit(Events.MOVE_USER, {id: user.id, x: user.getX(), y: user.getY()})
 }
 
-function onClientDisconnect (data) {
+function onDisconnect (data) {
 	console.log('User has disconnected: ' + data.id)
 
 	var removeUser = _.find(users, function(o) { return o.id == data.id });
@@ -143,8 +137,6 @@ function onClientDisconnect (data) {
 
 	this.broadcast.emit(Events.REMOVE_USER, {id: data.id})
 }
-*/
-
 
 /*
 

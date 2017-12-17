@@ -36,18 +36,18 @@ export default class extends Phaser.State {
 		this.socket.on(Events.CONNECT, e => this._onConnect(e))
 
 		this.socket.on(Events.REGISTER, e => this._onRegister(e))
+
+		this.socket.on(Events.NEW_USER, e => this._onNewUser(e))
 		
 		/*
 		this.socket.on(Events.NEW_CLIENT_USER, e => this._onNewClientUser(e))
-
-		this.socket.on(Events.NEW_USER, e => this._onNewUser(e))
+		*/
 
 		this.socket.on(Events.MOVE_USER, e => this._onMoveUser(e))
 
 		this.socket.on(Events.REMOVE_USER, e => this._onRemoveUser(e))
 
-		this.socket.on(Events.CLIENT_DISCONNECT, e => this._onClientDisconnect(e))
-		*/
+		this.socket.on(Events.DISCONNECT, e => this._onDisconnect(e))
 	}
 
 	update () {
@@ -80,15 +80,20 @@ export default class extends Phaser.State {
 
 		if (!data.isSecondaryDevice) {
 			
-			let callout = 'URL: ';
-    		domCallout.innerHTML = callout + window.location.hostname + ':8000?key=' + data.key;
+			let callout = '';
+    		domCallout.value = callout + window.location.hostname + ':8000?key=' + data.key;
 
 		} else {
 
 			let callout = 'isSecondaryDevice';
-			domCallout.innerHTML = callout;
-			
-			this.socket.on(Events.NEW_USER, e => this._onNewUser(e))
+			domCallout.value = callout;
+
+			this.socket.emit(Events.NEW_USER, {
+				id: this.gameUID,
+				x: Math.random() * this.game.world.width,
+				y: Math.random() * this.game.world.height,
+				color: Utils.randomHex()
+			})
 		}
 	}
 
@@ -106,8 +111,10 @@ export default class extends Phaser.State {
 
 		this.socket.emit(Events.NEW_USER, data)
 	}
+	*/
 
 	_onNewUser (data) {
+		console.log('_onNewUser', data)
 
 		let duplicate = this.users.find(function(user){
 			return user.id == data.id;
@@ -158,7 +165,7 @@ export default class extends Phaser.State {
 		console.log('_handleUserColision', me, them)
 	}
 
-	_onClientDisconnect (data) {
+	_onDisconnect (data) {
 		let user = this.users.find(function(user){
 			return user.id == data.id;
 		})
@@ -169,5 +176,4 @@ export default class extends Phaser.State {
 		// 		if (user.disconnected) user.delete();
 		// }, 1000);
 	}
-	*/
 }
