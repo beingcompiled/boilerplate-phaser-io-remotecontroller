@@ -11,7 +11,7 @@ export default class extends Phaser.State {
 
 	init () {
 		this.users;
-		this.gameUID;
+		// this.gameUID;
 	}
  
 	preload () {
@@ -20,8 +20,8 @@ export default class extends Phaser.State {
 
 	create () {
 		// create new browser session and UUID if none exists
-		this.gameUID = (!localStorage.getItem('gameUID')) ? Utils.generateUID() : localStorage.getItem('gameUID');
-		localStorage.setItem('gameUID', this.gameUID)
+		// this.gameUID = (!localStorage.getItem('gameUID')) ? Utils.generateUID() : localStorage.getItem('gameUID');
+		// localStorage.setItem('gameUID', this.gameUID)
 
 		this.background = Draw.randomBackground(game, this.game.width, this.game.height, 100);
 
@@ -37,12 +37,10 @@ export default class extends Phaser.State {
 
 		this.socket.on(Events.REGISTER, e => this._onRegister(e))
 
+		this.socket.on(Events.NEW_CLIENT_USER, e => this._onNewClientUser(e))
+
 		this.socket.on(Events.NEW_USER, e => this._onNewUser(e))
 		
-		/*
-		this.socket.on(Events.NEW_CLIENT_USER, e => this._onNewClientUser(e))
-		*/
-
 		this.socket.on(Events.MOVE_USER, e => this._onMoveUser(e))
 
 		this.socket.on(Events.REMOVE_USER, e => this._onRemoveUser(e))
@@ -69,6 +67,11 @@ export default class extends Phaser.State {
 
 	_onConnect (data) {
 		console.log('_onConnect')
+
+		this.users.forEach(function(user) {
+			user.kill()
+		})
+		this.users = [];
 		
 		this.socket.emit(Events.REGISTER, { key: Utils.getQuery('key')})
 	}
@@ -88,30 +91,18 @@ export default class extends Phaser.State {
 			let callout = 'isSecondaryDevice';
 			domCallout.value = callout;
 
-			this.socket.emit(Events.NEW_USER, {
-				id: this.gameUID,
+			let userData = {
+				id: Utils.generateUID(),
 				x: Math.random() * this.game.world.width,
 				y: Math.random() * this.game.world.height,
 				color: Utils.randomHex()
-			})
+			}
+
+			this.socket.emit(Events.NEW_USER, userData)
+
+			this.user = new User({ ...userData, game: this.game, socket: this.socket })
 		}
 	}
-
-
-	/*
-	_onNewClientUser(data) {
-
-		let duplicate = this.users.find(function(user){
-			return user.id == data.id;
-		})
-		if (duplicate) return
-		
-		this.user = new User({ ...data, game: this.game, socket: this.socket })
-		this.users.push(this.user)
-
-		this.socket.emit(Events.NEW_USER, data)
-	}
-	*/
 
 	_onNewUser (data) {
 		console.log('_onNewUser', data)
@@ -122,11 +113,11 @@ export default class extends Phaser.State {
 		if (duplicate) return
 
 		this.users.push(new User({
-			id: data.id,
-			x: data.x,
-			y: data.y,
-			color: data.color,
-			game: this.game,
+		  	id: data.id,
+		  	x: data.x,
+		 	y: data.y,
+		  	color: data.color,
+		  	game: this.game,
 			socket: this.socket
 		}))
 	}

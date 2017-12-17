@@ -72,6 +72,7 @@ function onRegister (data) {
 		console.log('access granted: ', key)
 
 		this.emit(Events.REGISTER, { isSecondaryDevice: true })
+
 	} else {
 		console.log('access denied: ', key)
 
@@ -82,26 +83,22 @@ function onRegister (data) {
 function onNewUser (data) {
 	console.log('onNewUser: ', data)
 
+	var newUser = new User(data.id, data.x, data.y, data.color)
+
 	this.broadcast.emit(Events.NEW_USER, data);
 
 	// Send existing users to the new user
 	for (var i = 0; i < users.length; i++) {
 		var existingUser = users[i]
 		this.emit(Events.NEW_USER, {
-			id: existingUser.id, 
-			x: existingUser.getX(), 
+			id: existingUser.id,
+			x: existingUser.getX(),
 			y: existingUser.getY(),
 			color: existingUser.getColor()
 		})
 	}
 
-	var duplicate = _.find(users, function(o) { return o.id == data.id });
-
-	if (!duplicate) {
-
-		var newUser = new User(data.id, data.x, data.y, data.color)
-		users.push(newUser);
-	}
+	users.push(newUser);
 
 	console.log('users: ', users.map( function(o) { return o.id; } ))
 }
@@ -145,6 +142,7 @@ function onDisconnect (data) {
 
 	
 */
+
 
 server.listen(port, '0.0.0.0', function onStart(err) {
 	if (err) console.log(err)
