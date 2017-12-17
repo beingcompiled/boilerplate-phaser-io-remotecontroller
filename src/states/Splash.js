@@ -1,9 +1,5 @@
 import Utils from './../../shared/Utils'
-
 import Phaser from 'phaser'
-
-// import body from '../../assets/images/body.png'
-// import head from '../../assets/images/head.png'
 
 export default class extends Phaser.State {
 	init () {}
@@ -14,8 +10,6 @@ export default class extends Phaser.State {
 		Utils.centerGameObjects([this.loaderBg, this.loaderBar])
 
 		this.load.setPreloadSprite(this.loaderBar)
-		// this.game.load.image('body', body)
-		// this.game.load.image('head', head)
 	}
 
 	create () {

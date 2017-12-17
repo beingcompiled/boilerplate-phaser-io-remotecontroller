@@ -29,6 +29,8 @@ var users;
 
 function init () {
 
+	key = Utils.generateKey();
+
 	users = []
 	
 	setEventHandlers()
@@ -52,41 +54,37 @@ var setEventHandlers = function () {
 function onSocketConnection (client) {
 	console.log('onSocketConnection client.id' + '\n')
 
-	client.on(Events.REGISTER_SESSION, onRegisterSession)
+	// key = client.id.substring(0, 4).toLowerCase()
+
+	client.on(Events.REGISTER, onRegister)
+
+	/*
 
 	client.on(Events.NEW_USER, onNewUser)
 
 	client.on(Events.MOVE_USER, onMoveUser)
 
 	client.on(Events.SOCKET_DISCONNECT, onClientDisconnect)
+	*/
 
-	this.emit(Events.CLIENT_CONNECT)
+	this.emit(Events.CONNECT, { key: key })
 }
 
-function onRegisterSession (data) {
-	console.log('onRegisterSession ', data)
+function onRegister (data) {
+	console.log('onRegister ', key, data.key)
 
-	var duplicate = _.find(users, function(o) { return o.id == data.id });
+	if (data.key == key) {
+		console.log('access granted: ', key)
 
-	if (!duplicate) {
-
-		console.log('create new user')
-
-		this.emit(Events.NEW_CLIENT_USER, data)
-
+		this.emit(Events.REGISTER, { isSecondaryDevice: true })
 	} else {
+		console.log('access denied: ', key)
 
-		console.log('user already exists')
-
-		this.emit(Events.NEW_CLIENT_USER, {
-			id: data.id,
-			x: duplicate.getX(),
-			y: duplicate.getY(),
-			color: duplicate.getColor()
-		})
+		this.emit(Events.REGISTER, { isSecondaryDevice: false, key: key })
 	}
 }
 
+/*
 function onNewUser (data) {
 	console.log('onNewUser: ', data)
 
@@ -145,6 +143,7 @@ function onClientDisconnect (data) {
 
 	this.broadcast.emit(Events.REMOVE_USER, {id: data.id})
 }
+*/
 
 
 /*

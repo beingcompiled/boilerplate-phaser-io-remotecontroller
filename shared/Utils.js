@@ -16,6 +16,16 @@ module.exports = {
 		sprite.height = sprite.texture.height - (sprite.texture.height * percentWidth / 100)
 	},
 
+	generateKey() {
+		var text = "";
+		var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+		for (var i = 0; i < 5; i++)
+			text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+		return text;
+	},
+
 	generateUID: () => {
 		var s = [];
 		var hexDigits = "0123456789abcdef";
@@ -32,5 +42,12 @@ module.exports = {
 
 	randomHex: () => {
 		return '0x' + Math.floor(Math.random()*16777215).toString(16);
+	},
+
+	getQuery(name) {
+    	name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+    	var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+    	var results = regex.exec(location.search);
+    	return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
 	}
 }

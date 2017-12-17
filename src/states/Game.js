@@ -33,8 +33,11 @@ export default class extends Phaser.State {
 
 		// this.game.camera.follow(this.user.head);
 	
-		this.socket.on(Events.CLIENT_CONNECT, e => this._onClientConnect(e))
+		this.socket.on(Events.CONNECT, e => this._onConnect(e))
 
+		this.socket.on(Events.REGISTER, e => this._onRegister(e))
+		
+		/*
 		this.socket.on(Events.NEW_CLIENT_USER, e => this._onNewClientUser(e))
 
 		this.socket.on(Events.NEW_USER, e => this._onNewUser(e))
@@ -44,6 +47,7 @@ export default class extends Phaser.State {
 		this.socket.on(Events.REMOVE_USER, e => this._onRemoveUser(e))
 
 		this.socket.on(Events.CLIENT_DISCONNECT, e => this._onClientDisconnect(e))
+		*/
 	}
 
 	update () {
@@ -63,20 +67,30 @@ export default class extends Phaser.State {
 		}*/
 	}
 
-	_onClientConnect () {
-		console.log('_onClientConnect')
-
-		// generate new user (in case one doesn't already exist)
-		let userData = {
-			id: this.gameUID,
-			x: this.game.world.centerX,
-			y: this.game.world.centerY,
-			color: Utils.randomHex()
-		}
+	_onConnect (data) {
+		console.log('_onConnect')
 		
-		this.socket.emit(Events.REGISTER_SESSION, userData)
+		this.socket.emit(Events.REGISTER, { key: Utils.getQuery('key')})
 	}
 
+	_onRegister (data) {
+		console.log('_onRegister')
+
+		let fontStyle = { font: '14px Arial', fill: '#FFFFFF' };
+		let calloutSpacing = 20;
+
+		if (!data.isSecondaryDevice) {
+			let callout = 'URL: ';
+			let text = this.add.text(calloutSpacing, calloutSpacing, callout, fontStyle);
+			text.setText(callout + window.location.hostname + ':8000?key=' + data.key);
+		} else {
+			let callout = 'isSecondaryDevice' ;
+			let text = this.add.text(calloutSpacing, calloutSpacing, callout, fontStyle);
+			text.setText(callout);
+		}
+	}
+
+	/*
 	_onNewClientUser(data) {
 
 		let duplicate = this.users.find(function(user){
@@ -152,4 +166,5 @@ export default class extends Phaser.State {
 		// 		if (user.disconnected) user.delete();
 		// }, 1000);
 	}
+	*/
 }
