@@ -1,4 +1,10 @@
-npm install
-npm start
+work in progress
 
-Based on: https://github.com/lean/phaser-es6-webpack.git
+- simple deviceorientation example
+
+---
+
+- npm install
+- npm start
+
+based on: https://github.com/lean/phaser-es6-webpack.git
