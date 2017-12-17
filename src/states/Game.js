@@ -76,19 +76,22 @@ export default class extends Phaser.State {
 	_onRegister (data) {
 		console.log('_onRegister')
 
-		let fontStyle = { font: '14px Arial', fill: '#FFFFFF' };
-		let calloutSpacing = 20;
+		let domCallout = document.getElementById('callout');		
 
 		if (!data.isSecondaryDevice) {
+			
 			let callout = 'URL: ';
-			let text = this.add.text(calloutSpacing, calloutSpacing, callout, fontStyle);
-			text.setText(callout + window.location.hostname + ':8000?key=' + data.key);
+    		domCallout.innerHTML = callout + window.location.hostname + ':8000?key=' + data.key;
+
 		} else {
-			let callout = 'isSecondaryDevice' ;
-			let text = this.add.text(calloutSpacing, calloutSpacing, callout, fontStyle);
-			text.setText(callout);
+
+			let callout = 'isSecondaryDevice';
+			domCallout.innerHTML = callout;
+			
+			this.socket.on(Events.NEW_USER, e => this._onNewUser(e))
 		}
 	}
+
 
 	/*
 	_onNewClientUser(data) {
