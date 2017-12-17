@@ -15,8 +15,8 @@ const server = require('http').Server(app);
 const io = require('socket.io')(server);
 const _ = require('lodash');
 
-var User = require('./server/User');
-var users;
+let User = require('./server/User');
+let users;
 
 /*
 
@@ -44,7 +44,7 @@ function init () {
 
 */
 
-var setEventHandlers = function () {
+const setEventHandlers = function () {
 	
 	// io.set({transports: ['websocket'], upgrade: false}); // force webSocket ONLY and never use HTTP polling
 	
@@ -83,13 +83,13 @@ function onRegister (data) {
 function onNewUser (data) {
 	console.log('onNewUser: ', data)
 
-	var newUser = new User(data.id, data.x, data.y, data.color)
+	let newUser = new User(data.id, data.x, data.y, data.color)
 
 	this.broadcast.emit(Events.NEW_USER, data);
 
 	// Send existing users to the new user
 	for (var i = 0; i < users.length; i++) {
-		var existingUser = users[i]
+		let existingUser = users[i]
 		this.emit(Events.NEW_USER, {
 			id: existingUser.id,
 			x: existingUser.getX(),
@@ -106,7 +106,7 @@ function onNewUser (data) {
 function onMoveUser(data) {
 	// console.log('onMoveUser', data)
 		
-	var user = _.find(users, function(o) { return o.id == data.id });
+	let user = _.find(users, function(o) { return o.id == data.id });
 	
 	if (!user) {
 		console.log('User not found: ' + data.id)
@@ -123,7 +123,7 @@ function onMoveUser(data) {
 function onDisconnect (data) {
 	console.log('User has disconnected: ' + data.id)
 
-	var removeUser = _.find(users, function(o) { return o.id == data.id });
+	let removeUser = _.find(users, function(o) { return o.id == data.id });
 
 	if (!removeUser) {
 		console.log('User not found: ' + data.id)

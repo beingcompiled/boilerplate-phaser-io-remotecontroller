@@ -68,9 +68,7 @@ export default class extends Phaser.State {
 	_onConnect (data) {
 		console.log('_onConnect')
 
-		this.users.forEach(function(user) {
-			user.kill()
-		})
+		this.users.forEach(function(user) { user.kill() })
 		this.users = [];
 		
 		this.socket.emit(Events.REGISTER, { key: Utils.getQuery('key')})

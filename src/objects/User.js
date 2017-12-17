@@ -26,8 +26,39 @@ export default class {
 		
 		this.head.body.collideWorldBounds = true;
 
-		this.head.x = x;``
+		this.head.x = x;
 		this.head.y = y;
+
+		window.addEventListener('deviceorientation', e => this._handleOrientation(e), true);
+	}
+
+	_handleOrientation(e) {
+		// alpha is from 0 to 360, beta -180 to 180 and gamma -90 to 90.
+		var z = e.alpha;
+		var y = e.beta;
+		var x = e.gamma;
+		var newX, newY;
+		
+		if (e.gamma > 0) {
+			newX = this.head.x + this.speed
+		}
+
+		if (e.gamma < 0) {
+			newX = this.head.x - this.speed
+		}
+
+		if (e.beta > 0) {
+			newY = this.head.y + this.speed
+		}
+
+		if (e.beta < 0) {
+			newY = this.head.y - this.speed
+		}
+
+
+		this.head.x = newX;
+		this.head.y = newY;
+		this.socket.emit(Events.MOVE_USER, { id: this.id, x: newX, y: newY })
 	}
 
 	update (cursor) {
